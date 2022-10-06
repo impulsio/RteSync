@@ -1,4 +1,4 @@
-Plugin jeedom MerosSync
+Plugin jeedom RteSync
 ========================
 <img src="docs/images/RteSync_icon.png" width="150" />
 Plugin jeedom permettant de s'interfacer avec l'API RTE.

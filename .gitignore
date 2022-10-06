@@ -1,5 +1,4 @@
-
-MerosSync.zip
+*.zip
 push.sh
 package.cmd
 *.ai
