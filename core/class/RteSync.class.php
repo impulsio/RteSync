@@ -220,26 +220,13 @@ class RteSync extends eqLogic {
       $replace = $this->preToHtml($version);
       if (!is_array($replace))
       {
+        log::add('RteSync','debug','Widget en cache');
         return $replace;
       }
 
-      $formatterDate = IntlDateFormatter::create(
-          'fr_FR',
-          IntlDateFormatter::FULL,
-          IntlDateFormatter::FULL,
-          $tz,
-          IntlDateFormatter::GREGORIAN,
-          'D MMM'
-      );
-      $formatterJour = IntlDateFormatter::create(
-          'fr_FR',
-          IntlDateFormatter::FULL,
-          IntlDateFormatter::FULL,
-          $tz,
-          IntlDateFormatter::GREGORIAN,
-          'EEEE'
-      );
-
+      log::add('RteSync','debug','Récupérations des valeurs');
+      $jourFR=array('1'=>'Lundi','2'=>'Mardi','3'=>'Mercredi','4'=>'Jeudi','5'=>'Vendredi','6'=>'Samedi','7'=>'Dimanche');
+      $moisFR=array('1'=>'Jan.','2'=>'Fev.','3'=>'Mars','4'=>'Avril','5'=>'Mai','6'=>'Juin','7'=>'Juil.','8'=>'Août','9'=>'Sept.','10'=>'Oct.','11'=>'Nov.','12'=>'Déc.');
       for ($i = 0; $i <= 3; $i++)
       {
         $cmd = $this->getCmd(null, 'date J+'.$i);
@@ -247,8 +234,8 @@ class RteSync extends eqLogic {
         if (is_object($cmd))
         {
           $jour=DateTime::createFromFormat('Y-m-d', $cmd->execCmd());
-          $replace['#jourJ'.$i.'#']=$formatterJour->format($jour);
-          $replace['#dateJ'.$i.'#']=$formatterDate->format($jour);
+          $replace['#jourJ'.$i.'#']=$jourFR[$jour->format('N')];
+          $replace['#dateJ'.$i.'#']=$jour->format('j').' '.$moisFR[$jour->format('n')];
         }
 
 
@@ -296,6 +283,7 @@ class RteSync extends eqLogic {
               $replace['#' . $key . '#'] = $value;
           }
       }
+      log::add('RteSync','debug','Récupérations template');
       $template=getTemplate('core', $version, 'rtesync_ecowatt', 'RteSync');
       return $this->postToHtml($version, template_replace($replace, $template));;
     }
