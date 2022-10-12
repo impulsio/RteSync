@@ -12,7 +12,7 @@
   "maxDependancyInstallTime": 30,
   "documentation": "https://github.com/impulsio/RteSync/blob/main/docs/fr_FR/index.md",
   "changelog": "https://github.com/impulsio/RteSync/blob/main/docs/fr_FR/changelog.md",
-  "documentation_beta":"https://github.com/impulsio/RteSync/blob/beta/docs/fr_FR/index.md",
+  "documentation_beta":"https://github.com/impulsio/RteSync/blob/beta/docs/fr_FR/changelog.md",
   "changelog_beta":"https://github.com/impulsio/RteSync/blob/beta/docs/fr_FR/changelog.md",
   "language" : ["fr_FR", "en_US"],
   "compatibility" : ["miniplus","smart","rpi","docker","diy"]
