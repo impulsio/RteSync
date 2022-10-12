@@ -115,14 +115,21 @@ class RteSync extends eqLogic {
                 $eqLogic->addMissingCmdEcoWatt();
                 foreach (json_decode($result)->signals as $signal)
                 {
-                  log::add('RteSync', 'debug', 'Voici le résultat '.substr($signal->jour,0,10).' : '.$signal->dvalue.' et '.$signal->message);
+                  log::add('RteSync', 'info', 'Voici le résultat '.substr($signal->jour,0,10).' : '.$signal->dvalue.' et '.$signal->message);
                   $jour=DateTime::createFromFormat('Y-m-d', substr($signal->jour,0,10));
-                  $jourJ=$today->diff($jour)->format("%a");
-                  log::add('RteSync', 'debug', 'Jour J+'.$jourJ);
-                  $eqLogic->checkAndUpdateCmd('date J+'.$jourJ, substr($signal->jour,0,10));
-                  $eqLogic->checkAndUpdateCmd('info J+'.$jourJ, $signal->message);
-                  $eqLogic->checkAndUpdateCmd('valeur J+'.$jourJ, $signal->dvalue);
-                  $eqLogic->save();
+                  if ($jour==false)
+                  {
+                    log::add('RteSync', 'error', 'impossible de récupérer les informations de date à partir de '.substr($signal->jour,0,10));
+                  }
+                  else
+                  {
+                    $jourJ=$today->diff($jour)->format("%a");
+                    log::add('RteSync', 'debug', 'Jour J+'.$jourJ);
+                    $eqLogic->checkAndUpdateCmd('date J+'.$jourJ, substr($signal->jour,0,10));
+                    $eqLogic->checkAndUpdateCmd('info J+'.$jourJ, $signal->message);
+                    $eqLogic->checkAndUpdateCmd('valeur J+'.$jourJ, $signal->dvalue);
+                    $eqLogic->save();
+                  }
                 }
               }
             }
@@ -224,6 +231,20 @@ class RteSync extends eqLogic {
         return $replace;
       }
 
+      $cmd = $this->getCmd(null, 'date J+0');
+      $jour=DateTime::createFromFormat('Y-m-d', $cmd->execCmd());
+      if ($jour == false)
+      {
+        log::add('RteSync','debug','On lance une synchro... A cause de J+0 : '.$cmd->execCmd());
+        self::syncOneRte($this);
+        $cmd = $this->getCmd(null, 'date J+0');
+        $jour=DateTime::createFromFormat('Y-m-d', $cmd->execCmd());
+        if ($jour == false)
+        {
+          log::add('RteSync','error','Problème de données... A cause du format de J+0 : '.$cmd->execCmd());
+        }
+      }
+
       log::add('RteSync','debug','Récupérations des valeurs');
       $jourFR=array('1'=>'Lundi','2'=>'Mardi','3'=>'Mercredi','4'=>'Jeudi','5'=>'Vendredi','6'=>'Samedi','7'=>'Dimanche');
       $moisFR=array('1'=>'Jan.','2'=>'Fev.','3'=>'Mars','4'=>'Avril','5'=>'Mai','6'=>'Juin','7'=>'Juil.','8'=>'Août','9'=>'Sept.','10'=>'Oct.','11'=>'Nov.','12'=>'Déc.');
@@ -234,8 +255,15 @@ class RteSync extends eqLogic {
         if (is_object($cmd))
         {
           $jour=DateTime::createFromFormat('Y-m-d', $cmd->execCmd());
-          $replace['#jourJ'.$i.'#']=$jourFR[$jour->format('N')];
-          $replace['#dateJ'.$i.'#']=$jour->format('j').' '.$moisFR[$jour->format('n')];
+          if ($jour == false)
+          {
+            log::add('RteSync','debug','Impossible de convertir '.$cmd->execCmd().' J+'.$i);
+          }
+          else
+          {
+            $replace['#jourJ'.$i.'#']=$jourFR[$jour->format('N')];
+            $replace['#dateJ'.$i.'#']=$jour->format('j').' '.$moisFR[$jour->format('n')];
+          }
         }
 
 
