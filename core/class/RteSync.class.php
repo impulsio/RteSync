@@ -29,6 +29,10 @@ class RteSync extends eqLogic {
       {
         self::refreshRte();
       }
+      else
+      {
+        log::add('RteSync', 'debug', 'Pas de synchronisation à cette heure');
+      }
     }
 
     public function postInsert()
@@ -49,7 +53,7 @@ class RteSync extends eqLogic {
           log::add('RteSync', 'debug', 'ID '.$eqLogic->getLogicalId().' - '.$eqLogic->getEqType_name().' - '.$eqLogic->getName());
           self::syncOneRte($eqLogic);
         }
-        log::add('RteSync', 'info', __('syncMeross: synchronisation terminée.', __FILE__));
+        log::add('RteSync', 'info', 'RteSync: synchronisation terminée.');
     }
 
     /**
@@ -140,7 +144,7 @@ class RteSync extends eqLogic {
           restore_error_handler();
 
           //$eqLogic->save();
-          log::add('RteSync', 'info', 'Synchronisation terminée !');
+          log::add('RteSync', 'info', 'Synchronisation de ' . $eqLogic->getName().' terminée !');
         }
 
     }
@@ -231,6 +235,11 @@ class RteSync extends eqLogic {
         return $replace;
       }
 
+      $replace['#id#'] = $this->getId();
+      $replace['#eqLogic_name#'] = $this->getName();
+      $replace['#object_name#'] = $this->getObject()->getName();
+
+      // Vérification que les données sont OK sinon force synchro et au final affichage page dédiée si toujours KO.
       $cmd = $this->getCmd(null, 'date J+0');
       $jour=DateTime::createFromFormat('Y-m-d', $cmd->execCmd());
       if ($jour == false)
@@ -241,7 +250,8 @@ class RteSync extends eqLogic {
         $jour=DateTime::createFromFormat('Y-m-d', $cmd->execCmd());
         if ($jour == false)
         {
-          log::add('RteSync','error','Problème de données... A cause du format de J+0 : '.$cmd->execCmd());
+          $template=getTemplate('core', $version, 'rtesync_nodata', 'RteSync');
+          return $this->postToHtml($version, template_replace($replace, $template));;
         }
       }
 
@@ -297,11 +307,6 @@ class RteSync extends eqLogic {
 
       $cmd = $this->getCmd(null, 'refresh');
       $replace['#refresh_id#'] = is_object($cmd) ? $cmd->getId() : '';
-
-      $replace['#id#'] = $this->getId();
-      //$replace['#uid#'] = $this->getId();
-      $replace['#eqLogic_name#'] = $this->getName();
-      $replace['#object_name#'] = $this->getObject()->getName();
 
       $parameters = $this->getDisplay('parameters');
       if (is_array($parameters))
