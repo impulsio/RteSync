@@ -1,7 +1,7 @@
 Plugin jeedom RteSync
 ========================
 <img src="docs/images/RteSync_icon.png" width="150" />
-Plugin jeedom permettant de s'interfacer avec l'API RTE.
+Plugin jeedom permettant de s'interfacer avec l'API RTE V5.
 
 # Documentation complète:
 
@@ -11,7 +11,7 @@ Plugin jeedom permettant de s'interfacer avec l'API RTE.
 - Jeedom 4.2
 
 # Ce qui fonctionne :
-- [API EcoWatt](https://data.rte-france.com/catalog/-/api/consumption/Ecowatt/v4.0)
+- [API EcoWatt V5](https://data.rte-france.com/catalog/-/api/consumption/Ecowatt/v5.0)
 
 # Changelog :
 - [Voir la changelog](docs/fr_FR/changelog.md)

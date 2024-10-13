@@ -73,7 +73,7 @@ class RteSync extends eqLogic {
         {
           log::add('RteSync', 'debug', 'Authentification utilisée : '.$auth);
           $urlOauth = 'https://digital.iservices.rte-france.com/token/oauth';
-          $urlEcoWatt = 'https://digital.iservices.rte-france.com/open_api/ecowatt/v4/signals';
+          $urlEcoWatt = 'https://digital.iservices.rte-france.com/open_api/ecowatt/v5/signals';
           $today= new DateTime("now");
 
           // use key 'http' even if you send the request to https://...
@@ -286,11 +286,11 @@ class RteSync extends eqLogic {
           {
             $replace['#imageJ'.$i.'#'] = 'courbe-signal-green.png';
           }
-          else if ($value)
+          else if ($value=='2')
           {
             $replace['#imageJ'.$i.'#'] = 'courbe-signal-orange.png';
           }
-          else if ($value)
+          else if ($value=='3')
           {
             $replace['#imageJ'.$i.'#'] = 'courbe-signal-red.png';
           }
